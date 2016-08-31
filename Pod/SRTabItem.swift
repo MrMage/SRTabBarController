@@ -18,6 +18,22 @@ public class SRTabItem: NSButton {
     
     /// The view controller associated with this item
     var viewController: NSViewController?
+	
+	var textTintColor: NSColor = NSColor.blackColor() {
+		didSet { updateTitle() }
+	}
+	
+	var imageTintColor: NSColor = NSColor.blackColor() {
+		didSet { updateImage() }
+	}
+	
+	override public var image: NSImage? {
+		didSet { updateImage() }
+	}
+	
+	var imageIsTemplate: Bool = false {
+		didSet { updateImage() }
+	}
     
     // MARK: - Initializers
     
@@ -29,6 +45,7 @@ public class SRTabItem: NSButton {
         wantsLayer = true
         bordered = false
         imagePosition = .ImageAbove
+		focusRingType = .None
         setButtonType(.MomentaryChangeButton)
         
         if let title = viewController.title {
@@ -60,27 +77,28 @@ public class SRTabItem: NSButton {
     func buttonPressed() {
         delegate?.tabIndexShouldChangeTo(index)
     }
-    
-    func setTintColor(tint: NSColor) {
-        
-        attributedTitle = NSAttributedString(string: title, attributes: [
-            NSFontAttributeName: NSFont.systemFontOfSize(10),
-            NSForegroundColorAttributeName: tint
-        ])
-        
-        guard let image = image else {
-            Swift.print("Item has no image")
-            return
-        }
-        
-        image.lockFocus()
-        tint.set()
-        let imageRect = NSRect(origin: NSZeroPoint, size: image.size)
-        NSRectFillUsingOperation(imageRect, .CompositeSourceAtop)
-        image.unlockFocus()
-        
-        self.image = image
-        
-    }
-    
+	
+	func updateTitle() {
+		attributedTitle = NSAttributedString(string: title, attributes: [
+			NSFontAttributeName: NSFont.systemFontOfSize(10),
+			NSForegroundColorAttributeName: textTintColor
+			])
+	}
+	
+	func updateImage() {
+		guard let image = image else {
+			Swift.print("Item has no image")
+			return
+		}
+		
+		image.lockFocus()
+		imageTintColor.set()
+		let imageRect = NSRect(origin: NSZeroPoint, size: image.size)
+		NSRectFillUsingOperation(imageRect, .CompositeSourceAtop)
+		image.unlockFocus()
+		
+		image.template = imageIsTemplate
+		
+		super.image = image
+	}
 }

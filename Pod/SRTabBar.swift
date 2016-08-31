@@ -25,9 +25,10 @@ public class SRTabBar: NSVisualEffectView {
         }
     }
     
-    /// The colour used for active items
-    public var tintColor = NSColor.yellowColor()
-    
+	/// The colour used for active items
+	public var textTintColor = NSColor.yellowColor()
+	public var imageTintColor = NSColor.yellowColor()
+	
     /// The colour used for inactive items
     public var textColor = NSColor.whiteColor()
     
@@ -45,7 +46,6 @@ public class SRTabBar: NSVisualEffectView {
             
             stack?.removeFromSuperview()
             stack = NSStackView(views: items.sort { $0.index < $1.index })
-            Swift.print(itemSpacing)
             stack?.spacing = itemSpacing
             addSubview(stack!)
             
@@ -102,14 +102,15 @@ public class SRTabBar: NSVisualEffectView {
      */
     internal func setActive(index: Int) {
         guard let views = stack?.views as? [SRTabItem] else {
-            Swift.print("Could not get views from stack")
             return
         }
-        
+		
+		let isVibrant = self.appearance?.allowsVibrancy == true
         for (current, view) in views.enumerate() {
-            let tint = (index == current) ? tintColor : textColor
-            view.setTintColor(tint)
+			let active = index == current
+			view.textTintColor = active ? textTintColor : textColor
+			view.imageTintColor = active ? imageTintColor : textColor
+			view.imageIsTemplate = isVibrant && !active
         }
-        
     }
 }

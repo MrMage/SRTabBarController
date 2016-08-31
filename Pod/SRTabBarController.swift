@@ -43,15 +43,22 @@ public class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemD
         didSet {
             tabBar?.textColor = barTextColor
         }
-    }
-    
-    /// The tint color of the tab bar
-    @IBInspectable public var barTintColor: NSColor = NSColor.yellowColor() {
-        didSet {
-            tabBar?.tintColor = barTintColor
-        }
-    }
-    
+	}
+	
+	/// The tint color of the tab bar's text
+	@IBInspectable public var barTextTintColor: NSColor = NSColor.yellowColor() {
+		didSet {
+			tabBar?.textTintColor = barTextTintColor
+		}
+	}
+	
+	/// The tint color of the tab bar's images
+	@IBInspectable public var barImageTintColor: NSColor = NSColor.yellowColor() {
+		didSet {
+			tabBar?.imageTintColor = barImageTintColor
+		}
+	}
+	
     /// The spacing between items on the tab bar
     @IBInspectable public var itemSpacing: CGFloat = 25 {
         didSet {
@@ -90,8 +97,9 @@ public class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemD
             tabView = view.tabView
             self.view = view
             
-            tabBar?.backgroundColor = barBackgroundColor
-            tabBar?.tintColor = barTintColor
+			tabBar?.backgroundColor = barBackgroundColor
+			tabBar?.textTintColor = barTextTintColor
+			tabBar?.imageTintColor = barImageTintColor
             tabBar?.textColor = barTextColor
             tabBar?.itemSpacing = itemSpacing
         }
