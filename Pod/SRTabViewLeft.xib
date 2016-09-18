@@ -13,7 +13,7 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <tabView drawsBackground="NO" allowsTruncatedLabels="NO" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="yTt-GK-FtF">
-                    <rect key="frame" x="66" y="0.0" width="414" height="272"/>
+                    <rect key="frame" x="78" y="0.0" width="402" height="272"/>
                     <font key="font" metaFont="system"/>
                     <tabViewItems/>
                     <connections>
@@ -21,9 +21,9 @@
                     </connections>
                 </tabView>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="vOc-F2-lJn" customClass="SRTabBar" customModule="Example" customModuleProvider="target">
-                    <rect key="frame" x="0.0" y="0.0" width="66" height="272"/>
+                    <rect key="frame" x="0.0" y="0.0" width="78" height="272"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="66" id="RU3-89-TIj"/>
+                        <constraint firstAttribute="width" constant="78" id="RU3-89-TIj"/>
                     </constraints>
                 </customView>
             </subviews>

@@ -126,7 +126,6 @@ public class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemD
         
         /// MAY get rejected from the MAS
         guard let segues = valueForKey("segueTemplates") as? [NSObject] else {
-            print("Could not find segues")
             return
         }
         

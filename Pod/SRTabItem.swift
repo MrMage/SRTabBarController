@@ -86,7 +86,7 @@ public class SRTabItem: NSButton {
 	}
 	
 	func updateImage() {
-		guard let image = image else {
+		guard let image = image?.copy() as? NSImage else {
 			Swift.print("Item has no image")
 			return
 		}
