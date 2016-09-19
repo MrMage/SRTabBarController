@@ -8,7 +8,7 @@
 
 import Cocoa
 
-public class SRTabItem: NSButton {
+open class SRTabItem: NSButton {
 
     /// The delegate for the item
     weak var delegate: SRTabItemDelegate?
@@ -19,15 +19,15 @@ public class SRTabItem: NSButton {
     /// The view controller associated with this item
     var viewController: NSViewController?
 	
-	var textTintColor: NSColor = NSColor.blackColor() {
+	var textTintColor: NSColor = NSColor.black {
 		didSet { updateTitle() }
 	}
 	
-	var imageTintColor: NSColor = NSColor.blackColor() {
+	var imageTintColor: NSColor = NSColor.black {
 		didSet { updateImage() }
 	}
 	
-	override public var image: NSImage? {
+	override open var image: NSImage? {
 		didSet { updateImage() }
 	}
 	
@@ -43,29 +43,29 @@ public class SRTabItem: NSButton {
         self.index = index
         self.viewController = viewController
         wantsLayer = true
-        bordered = false
-        imagePosition = .ImageAbove
-		focusRingType = .None
-        setButtonType(.MomentaryChangeButton)
+        isBordered = false
+        imagePosition = .imageAbove
+		focusRingType = .none
+        setButtonType(.momentaryChange)
         
         if let title = viewController.title {
             attributedTitle = NSAttributedString(string: title, attributes: [
-                NSFontAttributeName: NSFont.systemFontOfSize(10),
-                NSForegroundColorAttributeName: NSColor.whiteColor()
+                NSFontAttributeName: NSFont.systemFont(ofSize: 10),
+                NSForegroundColorAttributeName: NSColor.white
             ])
         } else {
             title = ""
-            imagePosition = .ImageOnly
+            imagePosition = .imageOnly
         }
         
-        (cell as? NSButtonCell)?.highlightsBy = .NoCellMask
+        (cell as? NSButtonCell)?.highlightsBy = NSCellStyleMask()
     }
     
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public override func viewDidMoveToSuperview() {
+    open override func viewDidMoveToSuperview() {
         super.viewDidMoveToSuperview()
         
         target = self
@@ -80,7 +80,7 @@ public class SRTabItem: NSButton {
 	
 	func updateTitle() {
 		attributedTitle = NSAttributedString(string: title, attributes: [
-			NSFontAttributeName: NSFont.systemFontOfSize(10),
+			NSFontAttributeName: NSFont.systemFont(ofSize: 10),
 			NSForegroundColorAttributeName: textTintColor
 			])
 	}
@@ -94,10 +94,10 @@ public class SRTabItem: NSButton {
 		image.lockFocus()
 		imageTintColor.set()
 		let imageRect = NSRect(origin: NSZeroPoint, size: image.size)
-		NSRectFillUsingOperation(imageRect, .CompositeSourceAtop)
+		NSRectFillUsingOperation(imageRect, .sourceAtop)
 		image.unlockFocus()
 		
-		image.template = imageIsTemplate
+		image.isTemplate = imageIsTemplate
 		
 		super.image = image
 	}
