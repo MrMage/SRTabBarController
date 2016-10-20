@@ -17,7 +17,11 @@ open class SRTabItem: NSButton {
     var index = 0
     
     /// The view controller associated with this item
-    var viewController: NSViewController?
+	var viewController: NSViewController?
+	
+	override open var title: String {
+		didSet { updateTitle() }
+	}
 	
 	var textTintColor: NSColor = NSColor.black {
 		didSet { updateTitle() }
@@ -49,10 +53,7 @@ open class SRTabItem: NSButton {
         setButtonType(.momentaryChange)
         
         if let title = viewController.title {
-            attributedTitle = NSAttributedString(string: title, attributes: [
-                NSFontAttributeName: NSFont.systemFont(ofSize: 10),
-                NSForegroundColorAttributeName: NSColor.white
-            ])
+			self.title = title
         } else {
             title = ""
             imagePosition = .imageOnly
