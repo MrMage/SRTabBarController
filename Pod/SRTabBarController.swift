@@ -23,7 +23,7 @@ open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDel
     open weak var delegate: SRTabBarDelegate?
     
     /// The location of the tab bar on the screen
-    open var tabBarLocation: SRTabLocation = .Bottom {
+    open var tabBarLocation: SRTabLocation = .Left {
         didSet {
             loadViewFromNib()
             tabBar?.location = tabBarLocation
@@ -92,7 +92,7 @@ open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDel
             tabBar = view.tabBar
             tabView = view.tabView
             self.view = view
-            
+			
 			tabBar?.backgroundColor = barBackgroundColor
 			tabBar?.textTintColor = barTextTintColor
 			tabBar?.imageTintColor = barImageTintColor
