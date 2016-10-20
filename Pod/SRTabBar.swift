@@ -9,6 +9,7 @@
 import Cocoa
 
 open class SRTabBar: NSVisualEffectView {
+	var layoutGuideConstraint: NSLayoutConstraint?
 
     /// Whether or not the tab bar is translucent
     open var translucent = false {
@@ -55,14 +56,26 @@ open class SRTabBar: NSVisualEffectView {
                 let centerY = NSLayoutConstraint(item: stack!, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
                 
                 addConstraints([centerX, centerY])
+				
+				layoutGuideConstraint = nil
             } else {
                 stack?.alignment = .centerX
                 
                 let horizontal = NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[stack]-10-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["stack": stack!])
-                let vertical = NSLayoutConstraint.constraints(withVisualFormat: "V:|-30-[stack]", options: NSLayoutFormatOptions(), metrics: nil, views: ["stack": stack!])
                 
-                addConstraints(horizontal)
-                addConstraints(vertical)
+				addConstraints(horizontal)
+				
+				Swift.print(self.window)
+				
+				if let layoutGuide = self.window?.contentLayoutGuide as? NSLayoutGuide {
+					layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: stack!.topAnchor)
+					layoutGuideConstraint?.isActive = true
+				} else {
+					let vertical = NSLayoutConstraint.constraints(withVisualFormat: "V:|-44-[stack]", options: NSLayoutFormatOptions(), metrics: nil, views: ["stack": stack!])
+					addConstraints(vertical)
+					
+					layoutGuideConstraint = nil
+				}
             }
         
         }
