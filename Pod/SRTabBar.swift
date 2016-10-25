@@ -65,8 +65,6 @@ open class SRTabBar: NSVisualEffectView {
                 
 				addConstraints(horizontal)
 				
-				Swift.print(self.window)
-				
 				if let layoutGuide = self.window?.contentLayoutGuide as? NSLayoutGuide {
 					layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: stack!.topAnchor)
 					layoutGuideConstraint?.isActive = true
