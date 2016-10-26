@@ -20,7 +20,10 @@ open class SRTabItem: NSButton {
 	var viewController: NSViewController?
 	
 	override open var title: String {
-		didSet { updateTitle() }
+		didSet {
+			imagePosition = title.isEmpty ? .imageOnly : .imageAbove
+			updateTitle()
+		}
 	}
 	
 	var textTintColor: NSColor = NSColor.black {
@@ -51,13 +54,8 @@ open class SRTabItem: NSButton {
         imagePosition = .imageAbove
 		focusRingType = .none
         setButtonType(.momentaryChange)
-        
-        if let title = viewController.title {
-			self.title = title
-        } else {
-            title = ""
-            imagePosition = .imageOnly
-        }
+		
+		self.title = viewController.title ?? ""
         
         (cell as? NSButtonCell)?.highlightsBy = NSCellStyleMask()
     }
