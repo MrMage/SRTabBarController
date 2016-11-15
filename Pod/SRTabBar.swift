@@ -40,7 +40,7 @@ open class SRTabBar: NSView {
     open var textColor = NSColor.white
     
     /// Spacing between the items
-    open var itemSpacing: CGFloat = 25 {
+    open var itemSpacing: CGFloat = 20 {
         didSet {
             stack?.spacing = itemSpacing
         }
@@ -72,7 +72,7 @@ open class SRTabBar: NSView {
 				addConstraints(horizontal)
 				
 				if let layoutGuide = self.window?.contentLayoutGuide as? NSLayoutGuide {
-					layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: stack!.topAnchor, constant: -8)
+					layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: stack!.topAnchor, constant: -0.5 * (itemSpacing + 8))
 					layoutGuideConstraint?.isActive = true
 					
 					if !translucent {
