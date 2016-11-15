@@ -8,24 +8,29 @@
 
 import Cocoa
 
-open class SRTabBar: NSVisualEffectView {
+open class SRTabBar: NSView {
 	var layoutGuideConstraint: NSLayoutConstraint?
 
     /// Whether or not the tab bar is translucent
     open var translucent = false {
         didSet {
-            state = (translucent) ? .active : .inactive
-            backgroundView.isHidden = translucent
+			updateBackground()
         }
     }
     
     /// The background color of the tab bar
     open var backgroundColor = NSColor.black {
-        didSet {
-            backgroundView.backgroundColor = backgroundColor
+		didSet {
+			updateBackground()
         }
-    }
-    
+	}
+	
+	private func updateBackground() {
+		backgroundView.state = translucent ? .active : .inactive
+		backgroundView.isHidden = !translucent
+		self.layer?.backgroundColor = !translucent ? self.backgroundColor.cgColor : nil
+	}
+	
 	/// The colour used for active items
 	open var textTintColor = NSColor.yellow
 	open var imageTintColor = NSColor.yellow
@@ -44,7 +49,6 @@ open class SRTabBar: NSVisualEffectView {
     /// When set, the tabs will be added to a stack view.
     open var items = [SRTabItem]() {
         didSet {
-            
             stack?.removeFromSuperview()
             stack = NSStackView(views: items.sorted { $0.index < $1.index })
             stack?.spacing = itemSpacing
@@ -85,25 +89,30 @@ open class SRTabBar: NSVisualEffectView {
     /// This view contains all of the items.
     fileprivate var stack: NSStackView?
     
-    fileprivate var backgroundView = SRTabBarBackground()
-    
+    public var backgroundView = NSVisualEffectView()
+
     // MARK: - Methods
     
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
         
-        wantsLayer = true
-        
         backgroundView.frame = NSZeroRect
-        backgroundView.backgroundColor = backgroundColor
+		backgroundView.blendingMode = .behindWindow
         addSubview(backgroundView)
-        
-        backgroundView.translatesAutoresizingMaskIntoConstraints = false
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[subview]-0-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["subview": backgroundView]))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[subview]-0-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["subview": backgroundView]))
-        
-        state = .inactive
+		
+		backgroundView.translatesAutoresizingMaskIntoConstraints = false
+		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[subview]-0-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["subview": backgroundView]))
+		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[subview]-0-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["subview": backgroundView]))
+		
+		self.wantsLayer = true
+		updateBackground()
     }
+	
+	open override func layout() {
+		super.layout()
+		
+		self.layer?.shadowPath = CGPath(rect: self.bounds, transform: nil)
+	}
 
     
     /**
