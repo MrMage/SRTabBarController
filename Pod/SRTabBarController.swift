@@ -60,7 +60,7 @@ open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDel
 	}
 	
     /// The spacing between items on the tab bar
-    @IBInspectable open var itemSpacing: CGFloat = 25 {
+    @IBInspectable open var itemSpacing: CGFloat = 20 {
         didSet {
             tabBar?.itemSpacing = itemSpacing
         }

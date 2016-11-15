@@ -66,7 +66,7 @@ open class SRTabBar: NSVisualEffectView {
 				addConstraints(horizontal)
 				
 				if let layoutGuide = self.window?.contentLayoutGuide as? NSLayoutGuide {
-					layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: stack!.topAnchor)
+					layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: stack!.topAnchor, constant: -8)
 					layoutGuideConstraint?.isActive = true
 				} else {
 					let vertical = NSLayoutConstraint.constraints(withVisualFormat: "V:|-44-[stack]", options: NSLayoutFormatOptions(), metrics: nil, views: ["stack": stack!])
