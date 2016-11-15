@@ -10,6 +10,7 @@ import Cocoa
 
 open class SRTabBar: NSView {
 	var layoutGuideConstraint: NSLayoutConstraint?
+	var topCoverConstraint: NSLayoutConstraint?
 
     /// Whether or not the tab bar is translucent
     open var translucent = false {
@@ -49,13 +50,15 @@ open class SRTabBar: NSView {
     /// When set, the tabs will be added to a stack view.
     open var items = [SRTabItem]() {
         didSet {
+			topCoverConstraint = nil
+			topCoverView.removeFromSuperview()
+			
             stack?.removeFromSuperview()
             stack = NSStackView(views: items.sorted { $0.index < $1.index })
             stack?.spacing = itemSpacing
             addSubview(stack!)
             
             if [SRTabLocation.Top, SRTabLocation.Bottom].contains(location) {
-                
                 let centerX = NSLayoutConstraint(item: stack!, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1, constant: 0)
                 let centerY = NSLayoutConstraint(item: stack!, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
                 
@@ -66,12 +69,22 @@ open class SRTabBar: NSView {
                 stack?.alignment = .centerX
                 
                 let horizontal = NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[stack]-10-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["stack": stack!])
-                
 				addConstraints(horizontal)
 				
 				if let layoutGuide = self.window?.contentLayoutGuide as? NSLayoutGuide {
 					layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: stack!.topAnchor, constant: -8)
 					layoutGuideConstraint?.isActive = true
+					
+					if !translucent {
+						addSubview(topCoverView)
+						addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[topCoverView]-0-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["topCoverView": topCoverView]))
+						addConstraints(NSLayoutConstraint.constraints(
+							withVisualFormat: "V:|-0-[topCoverView]", options: [],
+							metrics: nil, views: ["topCoverView": topCoverView]))
+						
+						topCoverConstraint = layoutGuide.topAnchor.constraint(equalTo: topCoverView.bottomAnchor, constant: 1)
+						topCoverConstraint?.isActive = true
+					}
 				} else {
 					let vertical = NSLayoutConstraint.constraints(withVisualFormat: "V:|-44-[stack]", options: NSLayoutFormatOptions(), metrics: nil, views: ["stack": stack!])
 					addConstraints(vertical)
@@ -79,7 +92,6 @@ open class SRTabBar: NSView {
 					layoutGuideConstraint = nil
 				}
             }
-        
         }
     }
     
@@ -90,19 +102,28 @@ open class SRTabBar: NSView {
     fileprivate var stack: NSStackView?
     
     public var backgroundView = NSVisualEffectView()
+	fileprivate var topCoverView = NSView()
 
     // MARK: - Methods
     
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
-        
-        backgroundView.frame = NSZeroRect
-		backgroundView.blendingMode = .behindWindow
-        addSubview(backgroundView)
 		
+		backgroundView.blendingMode = .behindWindow
 		backgroundView.translatesAutoresizingMaskIntoConstraints = false
+		addSubview(backgroundView)
 		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[subview]-0-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["subview": backgroundView]))
 		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[subview]-0-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["subview": backgroundView]))
+		
+		topCoverView.translatesAutoresizingMaskIntoConstraints = false
+		topCoverView.wantsLayer = true
+		topCoverView.layer?.backgroundColor = NSColor(calibratedWhite: 0.94, alpha: 1).cgColor
+		
+		let shadow = NSShadow()
+		shadow.shadowBlurRadius = 1
+		shadow.shadowOffset = NSSize(width: 0, height: 0)
+		shadow.shadowColor = NSColor(calibratedWhite: 0, alpha: 0.6)
+		topCoverView.shadow = shadow
 		
 		self.wantsLayer = true
 		updateBackground()
@@ -111,7 +132,11 @@ open class SRTabBar: NSView {
 	open override func layout() {
 		super.layout()
 		
-		self.layer?.shadowPath = CGPath(rect: self.bounds, transform: nil)
+		var shadowRect = self.bounds
+		if topCoverView.superview != nil {
+			shadowRect.size.height -= topCoverView.bounds.height
+		}
+		self.layer?.shadowPath = CGPath(rect: shadowRect, transform: nil)
 	}
 
     
