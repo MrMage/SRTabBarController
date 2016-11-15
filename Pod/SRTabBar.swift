@@ -116,12 +116,11 @@ open class SRTabBar: NSVisualEffectView {
             return
         }
 		
-		let isVibrant = self.appearance?.allowsVibrancy == true
         for (current, view) in views.enumerated() {
 			let active = index == current
 			view.textTintColor = active ? textTintColor : textColor
 			view.imageTintColor = active ? imageTintColor : textColor
-			view.imageIsTemplate = isVibrant && !active
+			view.imageIsTemplate = !active
         }
     }
 }
