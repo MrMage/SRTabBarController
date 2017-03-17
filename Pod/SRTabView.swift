@@ -10,8 +10,8 @@ import Cocoa
 
 open class SRTabView: NSView {
 
-    @IBOutlet weak var tabView: NSTabView!
+    @IBOutlet var tabView: NSTabView!
     
-    @IBOutlet weak var tabBar: SRTabBar!
+    @IBOutlet var tabBar: SRTabBar!
     
 }
