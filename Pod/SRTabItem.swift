@@ -73,7 +73,7 @@ open class SRTabItem: NSButton {
     
     // MARK: - Actions
     
-    func buttonPressed() {
+    @objc func buttonPressed() {
         delegate?.tabIndexShouldChangeTo(index)
     }
 	
