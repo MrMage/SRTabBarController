@@ -14,7 +14,7 @@ open class SRTabSegue: NSStoryboardSegue {
      This is empty so OS X doesn't shout at us for not overriding anything
      */
     open override func perform() {
-        print("Loading \(identifier ?? "(nil)")")
+        print("Loading \(identifier?.rawValue ?? "(nil)")")
     }
     
 }

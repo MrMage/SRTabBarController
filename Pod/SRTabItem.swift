@@ -57,7 +57,7 @@ open class SRTabItem: NSButton {
 		
 		self.title = viewController.title ?? ""
         
-        (cell as? NSButtonCell)?.highlightsBy = NSCellStyleMask()
+        (cell as? NSButtonCell)?.highlightsBy = NSCell.StyleMask()
     }
     
     required public init?(coder: NSCoder) {
@@ -79,8 +79,8 @@ open class SRTabItem: NSButton {
 	
 	func updateTitle() {
 		attributedTitle = NSAttributedString(string: title, attributes: [
-			NSFontAttributeName: NSFont.systemFont(ofSize: 10),
-			NSForegroundColorAttributeName: textTintColor
+			.font: NSFont.systemFont(ofSize: 10),
+			.foregroundColor: textTintColor
 			])
 	}
 	
@@ -93,7 +93,7 @@ open class SRTabItem: NSButton {
 		image.lockFocus()
 		imageTintColor.set()
 		let imageRect = NSRect(origin: NSZeroPoint, size: image.size)
-		NSRectFillUsingOperation(imageRect, .sourceAtop)
+		imageRect.fill(using: .sourceAtop)
 		image.unlockFocus()
 		
 		image.isTemplate = imageIsTemplate

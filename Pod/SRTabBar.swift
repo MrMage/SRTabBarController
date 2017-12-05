@@ -68,7 +68,7 @@ open class SRTabBar: NSView {
             } else {
                 stack?.alignment = .centerX
                 
-                let horizontal = NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[stack]-10-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["stack": stack!])
+                let horizontal = NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[stack]-10-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack!])
 				addConstraints(horizontal)
 				
 				if let layoutGuide = self.window?.contentLayoutGuide as? NSLayoutGuide {
@@ -77,7 +77,7 @@ open class SRTabBar: NSView {
 					
 					if !translucent {
 						addSubview(topCoverView)
-						addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[topCoverView]-0-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["topCoverView": topCoverView]))
+						addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[topCoverView]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["topCoverView": topCoverView]))
 						addConstraints(NSLayoutConstraint.constraints(
 							withVisualFormat: "V:|-0-[topCoverView]", options: [],
 							metrics: nil, views: ["topCoverView": topCoverView]))
@@ -86,7 +86,7 @@ open class SRTabBar: NSView {
 						topCoverConstraint?.isActive = true
 					}
 				} else {
-					let vertical = NSLayoutConstraint.constraints(withVisualFormat: "V:|-44-[stack]", options: NSLayoutFormatOptions(), metrics: nil, views: ["stack": stack!])
+					let vertical = NSLayoutConstraint.constraints(withVisualFormat: "V:|-44-[stack]", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack!])
 					addConstraints(vertical)
 					
 					layoutGuideConstraint = nil
@@ -112,8 +112,8 @@ open class SRTabBar: NSView {
 		backgroundView.blendingMode = .behindWindow
 		backgroundView.translatesAutoresizingMaskIntoConstraints = false
 		addSubview(backgroundView)
-		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[subview]-0-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["subview": backgroundView]))
-		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[subview]-0-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["subview": backgroundView]))
+		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[subview]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["subview": backgroundView]))
+		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[subview]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["subview": backgroundView]))
 		
 		topCoverView.translatesAutoresizingMaskIntoConstraints = false
 		topCoverView.wantsLayer = true
