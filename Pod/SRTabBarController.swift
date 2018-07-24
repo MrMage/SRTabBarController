@@ -83,7 +83,7 @@ open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDel
     fileprivate func loadViewFromNib() {
         var nibObjects: NSArray?
         Bundle(for: SRTabBarController.self).loadNibNamed(
-			NSNib.Name(tabBarLocation.rawValue),
+			tabBarLocation.rawValue,
 			owner: self, topLevelObjects: &nibObjects)
         
         for object in nibObjects ?? [] {
@@ -150,7 +150,7 @@ open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDel
             return
         }
         
-        let pieces: [String] = id.rawValue.split(separator: "_").map(String.init)
+        let pieces: [String] = id.split(separator: "_").map(String.init)
         
         guard let index = Int(pieces[1]) else {
             print("Could not get index from identifier")
@@ -159,7 +159,7 @@ open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDel
         
         let item = SRTabItem(index: index, viewController: vc)
         if pieces.count > 2 {
-            item.image = NSImage(named: NSImage.Name(pieces[2]))
+            item.image = NSImage(named: pieces[2])
         }
         addTabItem(item)
         
