@@ -14,7 +14,7 @@ open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDel
     open var tabBar: SRTabBar?
     
     /// The tab view that is being used behind the scenes
-    fileprivate var tabView: NSTabView?
+    open var tabView: NSTabView?
     
     /// The currently selected tab index
     open var currentIndex = 0

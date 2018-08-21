@@ -56,7 +56,7 @@ open class SRTabBar: NSView {
             stack?.removeFromSuperview()
             stack = NSStackView(views: items.sorted { $0.index < $1.index })
             stack?.spacing = itemSpacing
-            addSubview(stack!)
+            backgroundView.addSubview(stack!)
             
             if [SRTabLocation.Top, SRTabLocation.Bottom].contains(location) {
                 let centerX = NSLayoutConstraint(item: stack!, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1, constant: 0)
@@ -111,6 +111,7 @@ open class SRTabBar: NSView {
 		
 		backgroundView.blendingMode = .behindWindow
 		backgroundView.translatesAutoresizingMaskIntoConstraints = false
+		backgroundView.material = .sidebar
 		addSubview(backgroundView)
 		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[subview]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["subview": backgroundView]))
 		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[subview]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["subview": backgroundView]))
@@ -154,7 +155,11 @@ open class SRTabBar: NSView {
 			let active = index == current
 			view.textTintColor = active ? textTintColor : textColor
 			view.imageTintColor = active ? imageTintColor : textColor
-			view.imageIsTemplate = !active
+			if #available(OSX 10.14, *) {
+				view.imageIsTemplate = true
+			} else {
+				view.imageIsTemplate = !active
+			}
         }
     }
 }

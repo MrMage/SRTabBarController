@@ -9,6 +9,7 @@
 import Cocoa
 
 open class SRTabItem: NSButton {
+	open override var allowsVibrancy: Bool { return true }
 
     /// The delegate for the item
     weak var delegate: SRTabItemDelegate?
@@ -31,7 +32,13 @@ open class SRTabItem: NSButton {
 	}
 	
 	var imageTintColor: NSColor = NSColor.black {
-		didSet { updateImage() }
+		didSet {
+			if #available(OSX 10.14, *) {
+				self.contentTintColor = imageTintColor
+			} else {
+				updateImage()
+			}
+		}
 	}
 	
 	override open var image: NSImage? {
@@ -85,6 +92,11 @@ open class SRTabItem: NSButton {
 	}
 	
 	func updateImage() {
+		if imageIsTemplate {
+			self.image?.isTemplate = true
+			return
+		}
+		
 		guard let image = image?.copy() as? NSImage else {
 			Swift.print("Item has no image")
 			return
