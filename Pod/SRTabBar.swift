@@ -101,7 +101,7 @@ open class SRTabBar: NSView {
     /// This view contains all of the items.
     fileprivate var stack: NSStackView?
     
-    public var backgroundView = NSVisualEffectView()
+    public let backgroundView = NSVisualEffectView()
 	fileprivate var topCoverView = NSView()
 
     // MARK: - Methods

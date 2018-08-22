@@ -94,11 +94,13 @@ open class SRTabItem: NSButton {
 	func updateImage() {
 		if imageIsTemplate {
 			self.image?.isTemplate = true
+			super.image = self.image
 			return
 		}
 		
 		guard let image = image?.copy() as? NSImage else {
 			Swift.print("Item has no image")
+			super.image = nil
 			return
 		}
 		
@@ -108,7 +110,7 @@ open class SRTabItem: NSButton {
 		imageRect.fill(using: .sourceAtop)
 		image.unlockFocus()
 		
-		image.isTemplate = imageIsTemplate
+		image.isTemplate = false
 		
 		super.image = image
 	}
