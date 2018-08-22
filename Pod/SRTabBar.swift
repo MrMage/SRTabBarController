@@ -133,8 +133,9 @@ open class SRTabBar: NSView {
 	open override func layout() {
 		super.layout()
 		
-		if #available(OSX 10.14, *) {
-			backgroundView.appearance = NSAppearance(named: self.effectiveAppearance.bestMatch(from: [.vibrantLight, .vibrantDark])!)
+		if #available(OSX 10.14, *),
+			self.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua {
+			backgroundView.appearance = NSAppearance(named: .vibrantDark)
 		} else {
 			backgroundView.appearance = NSAppearance(named: .vibrantLight)
 		}
