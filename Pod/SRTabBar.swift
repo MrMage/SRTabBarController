@@ -133,6 +133,12 @@ open class SRTabBar: NSView {
 	open override func layout() {
 		super.layout()
 		
+		if #available(OSX 10.14, *) {
+			backgroundView.appearance = NSAppearance(named: self.effectiveAppearance.bestMatch(from: [.vibrantLight, .vibrantDark])!)
+		} else {
+			backgroundView.appearance = NSAppearance(named: .vibrantLight)
+		}
+		
 		var shadowRect = self.bounds
 		if topCoverView.superview != nil {
 			shadowRect.size.height -= topCoverView.bounds.height

@@ -104,13 +104,13 @@ open class SRTabItem: NSButton {
 			return
 		}
 		
+		image.isTemplate = false
+		
 		image.lockFocus()
 		imageTintColor.set()
 		let imageRect = NSRect(origin: NSZeroPoint, size: image.size)
 		imageRect.fill(using: .sourceAtop)
 		image.unlockFocus()
-		
-		image.isTemplate = false
 		
 		super.image = image
 	}
