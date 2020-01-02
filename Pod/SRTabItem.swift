@@ -51,7 +51,7 @@ open class SRTabItem: NSButton {
     
     // MARK: - Initializers
     
-    init(index: Int, viewController: NSViewController) {
+    public init(index: Int, viewController: NSViewController) {
         super.init(frame: NSZeroRect)
         
         self.index = index

@@ -153,7 +153,7 @@ open class SRTabBar: NSView {
      
      - parameter index: The index to add
      */
-    internal func setActive(_ index: Int) {
+    public func setActive(_ index: Int) {
         guard let views = stack?.views as? [SRTabItem] else {
             return
         }
