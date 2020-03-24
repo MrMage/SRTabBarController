@@ -121,7 +121,8 @@ open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDel
      Embed the tabs defined in the storyboard
      */
     fileprivate func embedTabs() {
-        
+        // Commented out in the hopes of fixing window state restoration on macOS 10.15.
+        /*
         /// MAY get rejected from the MAS
         guard let segues = value(forKey: "segueTemplates") as? [NSObject] else {
             return
@@ -135,10 +136,11 @@ open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDel
         }
         
         tabBar?.setActive(currentIndex)
-        
+        */
     }
     
-    open override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
+    // Commented out in the hopes of fixing window state restoration on macOS 10.15.
+    /*open override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
         
         guard let id = segue.identifier else {
             print("Identifier not set")
@@ -163,7 +165,7 @@ open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDel
         }
         addTabItem(item)
         
-    }
+    }*/
     
     /**
      Add a tab item to the NSTabView and the SRTabBar
