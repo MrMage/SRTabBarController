@@ -10,27 +10,6 @@ import Cocoa
 
 open class SRTabBar: NSView {
 	var layoutGuideConstraint: NSLayoutConstraint?
-	var topCoverConstraint: NSLayoutConstraint?
-
-    /// Whether or not the tab bar is translucent
-    open var translucent = false {
-        didSet {
-			updateBackground()
-        }
-    }
-    
-    /// The background color of the tab bar
-    open var backgroundColor = NSColor.black {
-		didSet {
-			updateBackground()
-        }
-	}
-	
-	private func updateBackground() {
-		backgroundView.state = translucent ? .active : .inactive
-		backgroundView.isHidden = !translucent
-		self.layer?.backgroundColor = !translucent ? self.backgroundColor.cgColor : nil
-	}
 	
 	/// The colour used for active items
 	open var textTintColor = NSColor.yellow
@@ -39,46 +18,26 @@ open class SRTabBar: NSView {
     /// The colour used for inactive items
     open var textColor = NSColor.white
     
-    /// Spacing between the items
-    open var itemSpacing: CGFloat = 20 {
-        didSet {
-            stack?.spacing = itemSpacing
-        }
-    }
-    
     /// The items that are displayed on the tab bar.
     /// When set, the tabs will be added to a stack view.
     open var items = [SRTabItem]() {
         didSet {
-			topCoverConstraint = nil
-			topCoverView.removeFromSuperview()
-			
-            stack?.removeFromSuperview()
+			stack.removeFromSuperview()
             stack = NSStackView(views: items.sorted { $0.index < $1.index })
-            stack?.spacing = itemSpacing
-            backgroundView.addSubview(stack!)
+			let itemSpacing: CGFloat = 20
+			stack.spacing = itemSpacing
+            backgroundView.addSubview(stack)
 
-			stack?.alignment = .centerX
+			stack.alignment = .centerX
 
-			let horizontal = NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[stack]-10-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack!])
+			let horizontal = NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[stack]-10-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack])
 			addConstraints(horizontal)
 
 			if let layoutGuide = self.window?.contentLayoutGuide as? NSLayoutGuide {
-				layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: stack!.topAnchor, constant: -0.5 * (itemSpacing + 8))
+				layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: stack.topAnchor, constant: -0.5 * (itemSpacing + 8))
 				layoutGuideConstraint?.isActive = true
-
-				if !translucent {
-					addSubview(topCoverView)
-					addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[topCoverView]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["topCoverView": topCoverView]))
-					addConstraints(NSLayoutConstraint.constraints(
-									withVisualFormat: "V:|-0-[topCoverView]", options: [],
-									metrics: nil, views: ["topCoverView": topCoverView]))
-
-					topCoverConstraint = layoutGuide.topAnchor.constraint(equalTo: topCoverView.bottomAnchor, constant: 1)
-					topCoverConstraint?.isActive = true
-				}
 			} else {
-				let vertical = NSLayoutConstraint.constraints(withVisualFormat: "V:|-44-[stack]", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack!])
+				let vertical = NSLayoutConstraint.constraints(withVisualFormat: "V:|-44-[stack]", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack])
 				addConstraints(vertical)
 
 				layoutGuideConstraint = nil
@@ -88,10 +47,9 @@ open class SRTabBar: NSView {
     
     /// The stack view that is added to the bar.
     /// This view contains all of the items.
-    fileprivate var stack: NSStackView?
+    fileprivate var stack = NSStackView()
     
     public let backgroundView = NSVisualEffectView()
-	fileprivate var topCoverView = NSView()
 
     // MARK: - Methods
 
@@ -103,18 +61,7 @@ open class SRTabBar: NSView {
 		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[subview]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["subview": backgroundView]))
 		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[subview]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["subview": backgroundView]))
 
-		topCoverView.translatesAutoresizingMaskIntoConstraints = false
-		topCoverView.wantsLayer = true
-		topCoverView.layer?.backgroundColor = NSColor(calibratedWhite: 0.94, alpha: 1).cgColor
-
-		let shadow = NSShadow()
-		shadow.shadowBlurRadius = 1
-		shadow.shadowOffset = NSSize(width: 0, height: 0)
-		shadow.shadowColor = NSColor(calibratedWhite: 0, alpha: 0.6)
-		topCoverView.shadow = shadow
-
 		self.wantsLayer = true
-		updateBackground()
 	}
 
 	public required init?(coder: NSCoder) {
@@ -136,12 +83,6 @@ open class SRTabBar: NSView {
 		} else {
 			backgroundView.appearance = NSAppearance(named: .vibrantLight)
 		}
-		
-		var shadowRect = self.bounds
-		if topCoverView.superview != nil {
-			shadowRect.size.height -= topCoverView.bounds.height
-		}
-		self.layer?.shadowPath = CGPath(rect: shadowRect, transform: nil)
 	}
 
     
@@ -151,7 +92,7 @@ open class SRTabBar: NSView {
      - parameter index: The index to add
      */
     public func setActive(_ index: Int) {
-        guard let views = stack?.views as? [SRTabItem] else {
+        guard let views = stack.views as? [SRTabItem] else {
             return
         }
 		

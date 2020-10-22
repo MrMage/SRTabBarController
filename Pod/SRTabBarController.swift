@@ -11,7 +11,7 @@ import Cocoa
 open class SRTabBarController: NSViewController, SRTabItemDelegate {
 	private let splitViewController: NSSplitViewController = {
 		let controller = SRCustomizedSplitViewController()
-		controller.splitView.autosaveName = nil  //! FIXME: Allow this on macOS 11+?
+		controller.splitView.autosaveName = nil  //! FIXME: Allow this with variable-width items, e.g. when using a table view for the tab bar?
 		return controller
 	}()
 	private let barController = SRTabBarControllerInternal()
@@ -26,18 +26,8 @@ open class SRTabBarController: NSViewController, SRTabItemDelegate {
 
 	public var tabBar: SRTabBar { barController.tabBar }
     
-    /// The currently selected tab index
-    open var currentIndex = 0
-    
     /// The delegate for the controller
     open weak var delegate: SRTabBarDelegate?
-    
-    /// The background color of the tab bar
-    @IBInspectable open var barBackgroundColor: NSColor = NSColor.black {
-        didSet {
-			tabBar.backgroundColor = barBackgroundColor
-        }
-    }
     
     /// The text color of the tab bar 
     @IBInspectable open var barTextColor: NSColor = NSColor.white {
@@ -59,13 +49,6 @@ open class SRTabBarController: NSViewController, SRTabItemDelegate {
 			tabBar.imageTintColor = barImageTintColor
 		}
 	}
-	
-    /// The spacing between items on the tab bar
-    @IBInspectable open var itemSpacing: CGFloat = 20 {
-        didSet {
-			tabBar.itemSpacing = itemSpacing
-        }
-    }
 
 	open override func loadView() {
 		splitViewController.addSplitViewItem(barItem)
@@ -91,19 +74,15 @@ open class SRTabBarController: NSViewController, SRTabItemDelegate {
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-		tabBar.backgroundColor = barBackgroundColor
 		tabBar.textTintColor = barTextTintColor
 		tabBar.imageTintColor = barImageTintColor
 		tabBar.textColor = barTextColor
-		tabBar.itemSpacing = itemSpacing
     }
 
     open func selectTabAtIndex(_ index: Int) {
 		guard index >= 0, index < tabBar.items.count else {
 			return
 		}
-
-		currentIndex = index
 
 		let newViewController = tabBar.items[index].viewController
 		if newViewController !== currentMainItem?.viewController {
@@ -113,14 +92,24 @@ open class SRTabBarController: NSViewController, SRTabItemDelegate {
 
 			let newItem = NSSplitViewItem(viewController: newViewController)
 			newItem.canCollapse = false
-			newItem.minimumThickness = 100
 			splitViewController.addSplitViewItem(newItem)
 			self.currentMainItem = newItem
 		}
 
-		tabBar.setActive(currentIndex)
-		delegate?.tabIndexChanged(currentIndex)
+		tabBar.setActive(index)
+		delegate?.tabIndexChanged(index)
     }
+
+	open func setTabItems(_ items: [SRTabItem]) {
+		for item in items {
+			item.delegate = self
+		}
+		tabBar.items = items
+
+		if tabBar.items.count >= 1 {
+			self.selectTabAtIndex(0)
+		}
+	}
 
     open func addTabItem(_ item: SRTabItem) {
         item.delegate = self
