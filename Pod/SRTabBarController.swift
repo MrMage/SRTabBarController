@@ -9,7 +9,11 @@
 import Cocoa
 
 open class SRTabBarController: NSViewController, SRTabItemDelegate {
-	private let splitViewController = NSSplitViewController()
+	private let splitViewController: NSSplitViewController = {
+		let controller = SRCustomizedSplitViewController()
+		controller.splitView.autosaveName = nil  //! FIXME: Allow this on macOS 11+?
+		return controller
+	}()
 	private let barController = SRTabBarControllerInternal()
 	private lazy var barItem: NSSplitViewItem = {
 		let item = NSSplitViewItem(sidebarWithViewController: barController)
@@ -106,7 +110,7 @@ open class SRTabBarController: NSViewController, SRTabItemDelegate {
 			if let currentMainItem = currentMainItem {
 				splitViewController.removeSplitViewItem(currentMainItem)
 			}
-			
+
 			let newItem = NSSplitViewItem(viewController: newViewController)
 			newItem.canCollapse = false
 			newItem.minimumThickness = 100
