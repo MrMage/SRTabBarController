@@ -57,45 +57,34 @@ open class SRTabBar: NSView {
             stack = NSStackView(views: items.sorted { $0.index < $1.index })
             stack?.spacing = itemSpacing
             backgroundView.addSubview(stack!)
-            
-            if [SRTabLocation.Top, SRTabLocation.Bottom].contains(location) {
-                let centerX = NSLayoutConstraint(item: stack!, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1, constant: 0)
-                let centerY = NSLayoutConstraint(item: stack!, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
-                
-                addConstraints([centerX, centerY])
-				
-				layoutGuideConstraint = nil
-            } else {
-                stack?.alignment = .centerX
-                
-                let horizontal = NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[stack]-10-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack!])
-				addConstraints(horizontal)
-				
-				if let layoutGuide = self.window?.contentLayoutGuide as? NSLayoutGuide {
-					layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: stack!.topAnchor, constant: -0.5 * (itemSpacing + 8))
-					layoutGuideConstraint?.isActive = true
-					
-					if !translucent {
-						addSubview(topCoverView)
-						addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[topCoverView]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["topCoverView": topCoverView]))
-						addConstraints(NSLayoutConstraint.constraints(
-							withVisualFormat: "V:|-0-[topCoverView]", options: [],
-							metrics: nil, views: ["topCoverView": topCoverView]))
-						
-						topCoverConstraint = layoutGuide.topAnchor.constraint(equalTo: topCoverView.bottomAnchor, constant: 1)
-						topCoverConstraint?.isActive = true
-					}
-				} else {
-					let vertical = NSLayoutConstraint.constraints(withVisualFormat: "V:|-44-[stack]", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack!])
-					addConstraints(vertical)
-					
-					layoutGuideConstraint = nil
+
+			stack?.alignment = .centerX
+
+			let horizontal = NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[stack]-10-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack!])
+			addConstraints(horizontal)
+
+			if let layoutGuide = self.window?.contentLayoutGuide as? NSLayoutGuide {
+				layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: stack!.topAnchor, constant: -0.5 * (itemSpacing + 8))
+				layoutGuideConstraint?.isActive = true
+
+				if !translucent {
+					addSubview(topCoverView)
+					addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[topCoverView]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["topCoverView": topCoverView]))
+					addConstraints(NSLayoutConstraint.constraints(
+									withVisualFormat: "V:|-0-[topCoverView]", options: [],
+									metrics: nil, views: ["topCoverView": topCoverView]))
+
+					topCoverConstraint = layoutGuide.topAnchor.constraint(equalTo: topCoverView.bottomAnchor, constant: 1)
+					topCoverConstraint?.isActive = true
 				}
-            }
+			} else {
+				let vertical = NSLayoutConstraint.constraints(withVisualFormat: "V:|-44-[stack]", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack!])
+				addConstraints(vertical)
+
+				layoutGuideConstraint = nil
+			}
         }
     }
-    
-    internal var location: SRTabLocation = .Bottom
     
     /// The stack view that is added to the bar.
     /// This view contains all of the items.

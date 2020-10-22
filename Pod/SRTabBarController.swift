@@ -22,15 +22,6 @@ open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDel
     /// The delegate for the controller
     open weak var delegate: SRTabBarDelegate?
     
-    /// The location of the tab bar on the screen
-    open var tabBarLocation: SRTabLocation = .Left {
-        didSet {
-            loadViewFromNib()
-            tabBar?.location = tabBarLocation
-            embedTabs()
-        }
-    }
-    
     /// The background color of the tab bar
     @IBInspectable open var barBackgroundColor: NSColor = NSColor.black {
         didSet {
@@ -83,7 +74,7 @@ open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDel
     fileprivate func loadViewFromNib() {
         var nibObjects: NSArray?
         Bundle(for: SRTabBarController.self).loadNibNamed(
-			tabBarLocation.rawValue,
+			"SRTabBarController",
 			owner: self, topLevelObjects: &nibObjects)
         
         for object in nibObjects ?? [] {
