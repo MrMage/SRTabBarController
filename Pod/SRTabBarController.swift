@@ -8,13 +8,19 @@
 
 import Cocoa
 
-open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDelegate {
-    
-    /// The tab bar
-    open var tabBar: SRTabBar?
-    
-    /// The tab view that is being used behind the scenes
-    open var tabView: NSTabView?
+open class SRTabBarController: NSViewController, SRTabItemDelegate {
+	private let splitViewController = NSSplitViewController()
+	private let barController = SRTabBarControllerInternal()
+	private lazy var barItem: NSSplitViewItem = {
+		let item = NSSplitViewItem(sidebarWithViewController: barController)
+		item.canCollapse = false
+		item.minimumThickness = 78
+		item.maximumThickness = 78
+		return item
+	}()
+	private var currentMainItem: NSSplitViewItem?
+
+	public var tabBar: SRTabBar { barController.tabBar }
     
     /// The currently selected tab index
     open var currentIndex = 0
@@ -25,176 +31,105 @@ open class SRTabBarController: NSViewController, NSTabViewDelegate, SRTabItemDel
     /// The background color of the tab bar
     @IBInspectable open var barBackgroundColor: NSColor = NSColor.black {
         didSet {
-            tabBar?.backgroundColor = barBackgroundColor
+			tabBar.backgroundColor = barBackgroundColor
         }
     }
     
     /// The text color of the tab bar 
     @IBInspectable open var barTextColor: NSColor = NSColor.white {
         didSet {
-            tabBar?.textColor = barTextColor
+			tabBar.textColor = barTextColor
         }
 	}
 	
 	/// The tint color of the tab bar's text
 	@IBInspectable open var barTextTintColor: NSColor = NSColor.yellow {
 		didSet {
-			tabBar?.textTintColor = barTextTintColor
+			tabBar.textTintColor = barTextTintColor
 		}
 	}
 	
 	/// The tint color of the tab bar's images
 	@IBInspectable open var barImageTintColor: NSColor = NSColor.yellow {
 		didSet {
-			tabBar?.imageTintColor = barImageTintColor
+			tabBar.imageTintColor = barImageTintColor
 		}
 	}
 	
     /// The spacing between items on the tab bar
     @IBInspectable open var itemSpacing: CGFloat = 20 {
         didSet {
-            tabBar?.itemSpacing = itemSpacing
+			tabBar.itemSpacing = itemSpacing
         }
     }
-    
-    
-    required public init?(coder: NSCoder) {
-        super.init(coder: coder)
-        loadViewFromNib()
-    }
+
+	open override func loadView() {
+		splitViewController.addSplitViewItem(barItem)
+
+		let view = NSView()
+		splitViewController.view.translatesAutoresizingMaskIntoConstraints = false
+		view.addSubview(splitViewController.view)
+		view.addConstraints(NSLayoutConstraint.constraints(
+								withVisualFormat: "H:|[splitView]|",
+								options: [],
+								metrics: nil,
+								views: ["splitView": splitViewController.view]))
+		view.addConstraints(NSLayoutConstraint.constraints(
+								withVisualFormat: "V:|[splitView]|",
+								options: [],
+								metrics: nil,
+								views: ["splitView": splitViewController.view]))
+		self.view = view
+
+		self.addChild(splitViewController)
+	}
     
     open override func viewDidLoad() {
         super.viewDidLoad()
-        embedTabs()
+
+		tabBar.backgroundColor = barBackgroundColor
+		tabBar.textTintColor = barTextTintColor
+		tabBar.imageTintColor = barImageTintColor
+		tabBar.textColor = barTextColor
+		tabBar.itemSpacing = itemSpacing
     }
-    
-    /**
-     Load the view from the NIB
-     */
-    fileprivate func loadViewFromNib() {
-        var nibObjects: NSArray?
-        Bundle(for: SRTabBarController.self).loadNibNamed(
-			"SRTabBarController",
-			owner: self, topLevelObjects: &nibObjects)
-        
-        for object in nibObjects ?? [] {
-            guard let view = object as? SRTabView else {
-                continue
-            }
-            
-            tabBar = view.tabBar
-            tabView = view.tabView
-            self.view = view
-			
-			tabBar?.backgroundColor = barBackgroundColor
-			tabBar?.textTintColor = barTextTintColor
-			tabBar?.imageTintColor = barImageTintColor
-            tabBar?.textColor = barTextColor
-            tabBar?.itemSpacing = itemSpacing
-        }
-        
-    }
-    
-    
-    /**
-     Select the tab item at the specified index
-     
-     - parameter index: The index to select
-     */
+
     open func selectTabAtIndex(_ index: Int) {
-        tabView?.selectTabViewItem(at: index)
+		guard index >= 0, index < tabBar.items.count else {
+			return
+		}
+
+		currentIndex = index
+
+		let newViewController = tabBar.items[index].viewController
+		if newViewController !== currentMainItem?.viewController {
+			if let currentMainItem = currentMainItem {
+				splitViewController.removeSplitViewItem(currentMainItem)
+			}
+			
+			let newItem = NSSplitViewItem(viewController: newViewController)
+			newItem.canCollapse = false
+			newItem.minimumThickness = 100
+			splitViewController.addSplitViewItem(newItem)
+			self.currentMainItem = newItem
+		}
+
+		tabBar.setActive(currentIndex)
+		delegate?.tabIndexChanged(currentIndex)
     }
-    
-    
-    // MARK: - Load Tabs
-    
-    /**
-     Embed the tabs defined in the storyboard
-     */
-    fileprivate func embedTabs() {
-        // Commented out in the hopes of fixing window state restoration on macOS 10.15.
-        /*
-        /// MAY get rejected from the MAS
-        guard let segues = value(forKey: "segueTemplates") as? [NSObject] else {
-            return
-        }
-        
-        for segue in segues {
-            if let id = segue.value(forKey: "identifier") as? NSStoryboardSegue.Identifier {
-                performSegue(withIdentifier: id,
-							 sender: self)
-            }
-        }
-        
-        tabBar?.setActive(currentIndex)
-        */
-    }
-    
-    // Commented out in the hopes of fixing window state restoration on macOS 10.15.
-    /*open override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
-        
-        guard let id = segue.identifier else {
-            print("Identifier not set")
-            return
-        }
-        
-        guard let vc = segue.destinationController as? NSViewController else {
-            print("Could not load destination view controller")
-            return
-        }
-        
-        let pieces: [String] = id.split(separator: "_").map(String.init)
-        
-        guard let index = Int(pieces[1]) else {
-            print("Could not get index from identifier")
-            return
-        }
-        
-        let item = SRTabItem(index: index, viewController: vc)
-        if pieces.count > 2 {
-            item.image = NSImage(named: pieces[2])
-        }
-        addTabItem(item)
-        
-    }*/
-    
-    /**
-     Add a tab item to the NSTabView and the SRTabBar
-     
-     - parameter item: The tab item to be added
-     */
+
     open func addTabItem(_ item: SRTabItem) {
-        
-        guard let vc = item.viewController else {
-            print("View controller not set on tab item")
-            return
-        }
-        
-        let tabItem = NSTabViewItem(viewController: vc)
-        tabView?.addTabViewItem(tabItem)
-        
         item.delegate = self
-        tabBar?.items.append(item)
+		tabBar.items.append(item)
+
+		if tabBar.items.count == 1 {
+			self.selectTabAtIndex(0)
+		}
     }
-    
-    
-    // MARK: - NSTabViewDelegate
-    
-    open func tabView(_ tabView: NSTabView, didSelect tabViewItem: NSTabViewItem?) {
-        guard let item = tabViewItem else {
-            return
-        }
-        
-        currentIndex = tabView.indexOfTabViewItem(item)
-        tabBar?.setActive(currentIndex)
-        delegate?.tabIndexChanged(currentIndex)
-    }
-    
-    
+
     // MARK; - SRTabItemDelegate
     
     func tabIndexShouldChangeTo(_ index: Int) {
-        tabView?.selectTabViewItem(at: index)
+		self.selectTabAtIndex(index)
     }
-    
 }

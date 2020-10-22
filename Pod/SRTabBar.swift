@@ -94,30 +94,38 @@ open class SRTabBar: NSView {
 	fileprivate var topCoverView = NSView()
 
     // MARK: - Methods
-    
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-		
+
+	private func sharedInit() {
 		backgroundView.blendingMode = .behindWindow
 		backgroundView.translatesAutoresizingMaskIntoConstraints = false
 		backgroundView.material = .sidebar
 		addSubview(backgroundView)
 		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[subview]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["subview": backgroundView]))
 		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[subview]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["subview": backgroundView]))
-		
+
 		topCoverView.translatesAutoresizingMaskIntoConstraints = false
 		topCoverView.wantsLayer = true
 		topCoverView.layer?.backgroundColor = NSColor(calibratedWhite: 0.94, alpha: 1).cgColor
-		
+
 		let shadow = NSShadow()
 		shadow.shadowBlurRadius = 1
 		shadow.shadowOffset = NSSize(width: 0, height: 0)
 		shadow.shadowColor = NSColor(calibratedWhite: 0, alpha: 0.6)
 		topCoverView.shadow = shadow
-		
+
 		self.wantsLayer = true
 		updateBackground()
-    }
+	}
+
+	public required init?(coder: NSCoder) {
+		super.init(coder: coder)
+		sharedInit()
+	}
+
+	public override required init(frame frameRect: NSRect) {
+		super.init(frame: frameRect)
+		sharedInit()
+	}
 	
 	open override func layout() {
 		super.layout()

@@ -18,7 +18,7 @@ open class SRTabItem: NSButton {
     var index = 0
     
     /// The view controller associated with this item
-	var viewController: NSViewController?
+	var viewController: NSViewController
 	
 	override open var title: String {
 		didSet {
@@ -52,10 +52,10 @@ open class SRTabItem: NSButton {
     // MARK: - Initializers
     
     public init(index: Int, viewController: NSViewController) {
+		self.viewController = viewController
         super.init(frame: NSZeroRect)
         
         self.index = index
-        self.viewController = viewController
         wantsLayer = true
         isBordered = false
         imagePosition = .imageAbove
