@@ -24,21 +24,22 @@ open class SRTabBar: NSView {
         didSet {
 			stack.removeFromSuperview()
             stack = NSStackView(views: items.sorted { $0.index < $1.index })
+			stack.translatesAutoresizingMaskIntoConstraints = false
 			let itemSpacing: CGFloat = 20
 			stack.spacing = itemSpacing
-            backgroundView.addSubview(stack)
+			self.addSubview(stack)
 
 			stack.alignment = .centerX
 
 			let horizontal = NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[stack]-10-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack])
-			addConstraints(horizontal)
+			self.addConstraints(horizontal)
 
 			if let layoutGuide = self.window?.contentLayoutGuide as? NSLayoutGuide {
 				layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: stack.topAnchor, constant: -0.5 * (itemSpacing + 8))
 				layoutGuideConstraint?.isActive = true
 			} else {
 				let vertical = NSLayoutConstraint.constraints(withVisualFormat: "V:|-44-[stack]", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack])
-				addConstraints(vertical)
+				self.addConstraints(vertical)
 
 				layoutGuideConstraint = nil
 			}
@@ -48,42 +49,6 @@ open class SRTabBar: NSView {
     /// The stack view that is added to the bar.
     /// This view contains all of the items.
     fileprivate var stack = NSStackView()
-    
-    public let backgroundView = NSVisualEffectView()
-
-    // MARK: - Methods
-
-	private func sharedInit() {
-		backgroundView.blendingMode = .behindWindow
-		backgroundView.translatesAutoresizingMaskIntoConstraints = false
-		backgroundView.material = .sidebar
-		addSubview(backgroundView)
-		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[subview]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["subview": backgroundView]))
-		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[subview]-0-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["subview": backgroundView]))
-
-		self.wantsLayer = true
-	}
-
-	public required init?(coder: NSCoder) {
-		super.init(coder: coder)
-		sharedInit()
-	}
-
-	public override required init(frame frameRect: NSRect) {
-		super.init(frame: frameRect)
-		sharedInit()
-	}
-	
-	open override func layout() {
-		super.layout()
-		
-		if #available(OSX 10.14, *),
-			self.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua {
-			backgroundView.appearance = NSAppearance(named: .vibrantDark)
-		} else {
-			backgroundView.appearance = NSAppearance(named: .vibrantLight)
-		}
-	}
 
     
     /**
