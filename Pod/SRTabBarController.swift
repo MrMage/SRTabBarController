@@ -20,6 +20,7 @@ open class SRTabBarController: NSViewController, SRTabItemDelegate {
 		item.canCollapse = false
 		item.minimumThickness = 78
 		item.maximumThickness = 78
+		item.preferredThicknessFraction = NSSplitViewItem.unspecifiedDimension
 		return item
 	}()
 	private var currentMainItem: NSSplitViewItem?
@@ -92,6 +93,9 @@ open class SRTabBarController: NSViewController, SRTabItemDelegate {
 
 			let newItem = NSSplitViewItem(viewController: newViewController)
 			newItem.canCollapse = false
+			if #available(OSX 11.0, *) {
+				newItem.titlebarSeparatorStyle = .shadow
+			}
 			splitViewController.addSplitViewItem(newItem)
 			self.currentMainItem = newItem
 		}
