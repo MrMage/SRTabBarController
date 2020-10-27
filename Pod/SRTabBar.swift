@@ -9,8 +9,6 @@
 import Cocoa
 
 open class SRTabBar: NSView {
-	var layoutGuideConstraint: NSLayoutConstraint?
-	
 	/// The colour used for active items
 	open var textTintColor = NSColor.yellow
 	open var imageTintColor = NSColor.yellow
@@ -22,33 +20,29 @@ open class SRTabBar: NSView {
     /// When set, the tabs will be added to a stack view.
     open var items = [SRTabItem]() {
         didSet {
-			stack.removeFromSuperview()
-            stack = NSStackView(views: items.sorted { $0.index < $1.index })
-			stack.translatesAutoresizingMaskIntoConstraints = false
+			stackView.removeFromSuperview()
+            stackView = NSStackView(views: items.sorted { $0.index < $1.index })
+			stackView.orientation = .vertical
+			stackView.translatesAutoresizingMaskIntoConstraints = false
 			let itemSpacing: CGFloat = 20
-			stack.spacing = itemSpacing
-			self.addSubview(stack)
+			stackView.spacing = itemSpacing
+			self.addSubview(stackView)
 
-			stack.alignment = .centerX
+			stackView.alignment = .centerY
 
-			let horizontal = NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[stack]-10-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack])
+			let horizontal = NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[stackView]-20-|", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stackView": stackView])
 			self.addConstraints(horizontal)
-
-			if let layoutGuide = self.window?.contentLayoutGuide as? NSLayoutGuide {
-				layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: stack.topAnchor, constant: -0.5 * (itemSpacing + 8))
-				layoutGuideConstraint?.isActive = true
-			} else {
-				let vertical = NSLayoutConstraint.constraints(withVisualFormat: "V:|-44-[stack]", options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: ["stack": stack])
-				self.addConstraints(vertical)
-
-				layoutGuideConstraint = nil
-			}
+			self.addConstraints(NSLayoutConstraint.constraints(
+									withVisualFormat: "V:|-8-[stackView]|",
+									options: [],
+									metrics: nil,
+									views: ["stackView": stackView]))
         }
     }
     
     /// The stack view that is added to the bar.
     /// This view contains all of the items.
-    fileprivate var stack = NSStackView()
+    fileprivate var stackView = NSStackView()
 
     
     /**
@@ -57,7 +51,7 @@ open class SRTabBar: NSView {
      - parameter index: The index to add
      */
     public func setActive(_ index: Int) {
-        guard let views = stack.views as? [SRTabItem] else {
+        guard let views = stackView.views as? [SRTabItem] else {
             return
         }
 		

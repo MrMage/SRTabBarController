@@ -10,22 +10,27 @@ import Cocoa
 
 open class SRTabBarController: NSViewController, SRTabItemDelegate {
 	private let splitViewController: NSSplitViewController = {
-		let controller = SRCustomizedSplitViewController()
-		controller.splitView.autosaveName = nil  //! FIXME: Allow this with variable-width items, e.g. when using a table view for the tab bar?
+		let controller = NSSplitViewController()
+		controller.splitView.autosaveName = "SRTabBarController_splitViewController"
 		return controller
 	}()
 	private let barController = SRTabBarControllerInternal()
 	private lazy var barItem: NSSplitViewItem = {
 		let item = NSSplitViewItem(sidebarWithViewController: barController)
 		item.canCollapse = false
-		item.minimumThickness = 78
-		item.maximumThickness = 78
+		item.minimumThickness = 200
+		item.maximumThickness = 400
 		item.preferredThicknessFraction = NSSplitViewItem.unspecifiedDimension
 		return item
 	}()
 	private var currentMainItem: NSSplitViewItem?
 
 	public var tabBar: SRTabBar { barController.tabBar }
+
+	public var extraViewController: NSViewController? {
+		get { barController.extraViewController }
+		set { barController.extraViewController = newValue }
+	}
     
     /// The delegate for the controller
     open weak var delegate: SRTabBarDelegate?
