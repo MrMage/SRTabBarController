@@ -11,7 +11,8 @@ import Cocoa
 open class SRTabBarController: NSViewController, SRTabItemDelegate {
 	private let splitViewController: NSSplitViewController = {
 		let controller = NSSplitViewController()
-		controller.splitView.autosaveName = "SRTabBarController_splitViewController"
+		controller.splitView.identifier = NSUserInterfaceItemIdentifier("SRTabBarController_splitViewController")
+		controller.splitView.autosaveName = controller.splitView.identifier.map(\.rawValue)
 		return controller
 	}()
 	private let barController = SRTabBarControllerInternal()

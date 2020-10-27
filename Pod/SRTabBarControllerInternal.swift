@@ -15,7 +15,14 @@ private class TopLayoutGuideAlignedView: NSView {
 
 		guard let subview = self.subviews.first,
 			  let layoutGuide = self.window?.contentLayoutGuide as? NSLayoutGuide else { return }
-		layoutGuideConstraint = layoutGuide.topAnchor.constraint(equalTo: subview.topAnchor, constant: 0)
+
+		let overallTopMargin: CGFloat
+		if #available(OSX 11.0, *) {
+			overallTopMargin = 0
+		} else {
+			overallTopMargin = 12
+		}
+		layoutGuideConstraint = subview.topAnchor.constraint(equalTo: layoutGuide.topAnchor, constant: overallTopMargin)
 		layoutGuideConstraint?.isActive = true
 	}
 }
@@ -46,6 +53,12 @@ open class SRTabBarControllerInternal: NSViewController {
 
 	open override func loadView() {
 		tabBar.translatesAutoresizingMaskIntoConstraints = false
+
+		if #available(OSX 11.0, *) {
+			stackView.spacing = 0
+		} else {
+			stackView.spacing = 8
+		}
 
 		stackView.orientation = .vertical
 		stackView.distribution = .fill
@@ -83,10 +96,10 @@ open class SRTabBarControllerInternal: NSViewController {
 		}
 
 		view.addConstraints(NSLayoutConstraint.constraints(
-									withVisualFormat: "H:|[stackView]|",
-									options: [],
-									metrics: nil,
-									views: ["stackView": stackView]))
+								withVisualFormat: "H:|[stackView]|",
+								options: [],
+								metrics: nil,
+								views: ["stackView": stackView]))
 
 		self.view = view
 	}
